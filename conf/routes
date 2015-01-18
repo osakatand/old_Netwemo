@@ -4,7 +4,8 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /test                       controllers.Application.test
+GET     /humidity                   controllers.Application.getHumidity
+GET     /temperature                controllers.Application.getTemperature
 GET     /refresh                    controllers.Application.refresh
 
 # Map static resources from the /public folder to the /assets URL path

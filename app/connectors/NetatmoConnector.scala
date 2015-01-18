@@ -7,6 +7,15 @@ import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+
+/**
+ * Object containing the different metrics available
+ */
+object Metric extends Enumeration {
+  type MetricType = Value
+  val Humidity, Temperature = Value
+}
+
 /**
  * Handles connection to Netatmo REST API.
  */
@@ -23,7 +32,7 @@ class NetatmoConnector {
 
   private val postRefreshParameters = Map(
   "grant_type" -> Seq("refresh_token"),
-  "refresh_token" -> Seq(refreshToken),
+  "refresh_token" -> Seq(refresh_token),
   "client_id" -> Seq(client_id),
   "client_secret" -> Seq(client_secret)
   )
@@ -39,23 +48,24 @@ class NetatmoConnector {
     futureResponse
   }
 
-  def getHumidity = {
+  def getMetric(metricType: Metric.MetricType) = {
     val futureResponse =
       WS.url("http://api.netatmo.net/api/getmeasure")
         .withQueryString("access_token" -> access_token,
         "device_id" -> device_id,
         "scale" -> "max",
         "date_end" -> "last",
-        "type" -> "Humidity")
+        "type" -> metricType.toString)
         .get
 
 
-    val futureHumidity = futureResponse.map {
+    futureResponse.map {
       response =>
         ((response.json \ "body")(0) \ "value")(0)(0).as[Float]
     }
-
-    futureHumidity
   }
+
+  def getHumidity = getMetric(Metric.Humidity)
+  def getTemperature = getMetric(Metric.Temperature)
 
 }

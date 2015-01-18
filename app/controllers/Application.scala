@@ -15,8 +15,13 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def test = Action {
+  def getHumidity = Action {
     val response = Await.result(netatmoConnector.getHumidity, 5 seconds)
+    Ok(response.toString)
+  }
+
+  def getTemperature = Action {
+    val response = Await.result(netatmoConnector.getTemperature, 5 seconds)
     Ok(response.toString)
   }
 
