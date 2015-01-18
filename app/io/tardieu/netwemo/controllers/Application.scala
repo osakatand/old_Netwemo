@@ -15,14 +15,16 @@ object Application extends Controller {
     Ok(io.tardieu.netwemo.views.html.index("Your new application is ready."))
   }
 
-  def getHumidity = Action {
-    val response = Await.result(netatmoConnector.getHumidity, 5 seconds)
-    Ok(response.toString)
+  def getHumidity = Action.async {
+    netatmoConnector.getHumidity.map {
+      humidity => Ok(humidity.toString)
+    }
   }
 
-  def getTemperature = Action {
-    val response = Await.result(netatmoConnector.getTemperature, 5 seconds)
-    Ok(response.toString)
+  def getTemperature = Action.async {
+    netatmoConnector.getTemperature.map {
+      temperature => Ok(temperature.toString)
+    }
   }
 
   def refresh = Action {
