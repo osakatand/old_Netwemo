@@ -12,7 +12,7 @@ object Application extends Controller {
   val netatmoConnector = new NetatmoConnector
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(io.tardieu.netwemo.views.html.index("Your new application is ready."))
   }
 
   def getHumidity = Action {
@@ -26,8 +26,7 @@ object Application extends Controller {
   }
 
   def refresh = Action {
-    val response = Await.result(netatmoConnector.refreshToken, 5 seconds).body
-    Ok(response)
+    Ok(netatmoConnector.refreshToken)
   }
 
 }

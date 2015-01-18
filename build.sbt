@@ -14,3 +14,5 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.34"
+
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "1.6.0"

@@ -5,7 +5,8 @@ import play.api.libs.ws.{WSResponse, WS, WSRequestHolder}
 import play.api.Play.current
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
 
 
 /**
@@ -25,7 +26,7 @@ class NetatmoConnector {
 
   private val client_id = conf.getString("client_id")
   private val client_secret = conf.getString("client_secret")
-  private var refresh_token = conf.getString("refresh_token")
+  private val refresh_token = conf.getString("refresh_token")
   private val device_id = conf.getString("device_id")
 
   private var access_token = "54bb73f11b7759a9638e2314|9171bbe847fdb4836fde29cf22f748da"
@@ -38,17 +39,18 @@ class NetatmoConnector {
   )
 
 
-  def refreshToken: Future[WSResponse] = {
-
+  def refreshToken: String = {
     val futureResponse: Future[WSResponse] =
       WS.url("http://api.netatmo.net/oauth2/token")
         .withHeaders("Content-type" -> "application/x-www-form-urlencoded")
         .post(postRefreshParameters)
 
-    futureResponse
+    val futureToken = futureResponse.map(r => (r.json \ "access_token").as[String])
+    access_token = Await.result(futureToken, 5 seconds) // We wait for the token to be sure we have the good one
+    access_token
   }
 
-  def getMetric(metricType: Metric.MetricType) = {
+  def getMetric(metricType: Metric.MetricType): Future[Float] = {
     val futureResponse =
       WS.url("http://api.netatmo.net/api/getmeasure")
         .withQueryString("access_token" -> access_token,
@@ -56,7 +58,7 @@ class NetatmoConnector {
         "scale" -> "max",
         "date_end" -> "last",
         "type" -> metricType.toString)
-        .get
+        .get()
 
 
     futureResponse.map {
