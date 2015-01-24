@@ -51,6 +51,8 @@ class NetatmoConnector {
   }
 
   def getMetric(metricType: Metric.MetricType): Future[Float] = {
+    refreshToken // Ugly but it works (not really sure after all), we refresh the token before each call to the API
+    // TODO: Do it only when required
     val futureResponse =
       WS.url("http://api.netatmo.net/api/getmeasure")
         .withQueryString("access_token" -> access_token,
@@ -64,6 +66,8 @@ class NetatmoConnector {
     futureResponse.map {
       response =>
         ((response.json \ "body")(0) \ "value")(0)(0).as[Float]
+    }.recover {
+      case e: Throwable => -1
     }
   }
 

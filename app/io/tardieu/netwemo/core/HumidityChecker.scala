@@ -1,4 +1,4 @@
-package core
+package io.tardieu.netwemo.core
 
 import java.util.concurrent.TimeUnit
 
@@ -22,8 +22,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class HumidityChecker(getValueFunction: () => Future[Float], wemoConnector: WemoConnector) {
 
   // Those values should be read from the database
-  private var startTime: LocalTime = new LocalTime(2, 0) // 2 hours 0 minutes
-  private var stopTime: LocalTime = new LocalTime(23, 30) // 20 hours 30 minutes
+  private var startTime: LocalTime = new LocalTime(9, 0)
+  private var stopTime: LocalTime = new LocalTime(21, 0)
   private var lowThreshold = 50
   private var highThreshold = 55
   private var checkInterval = FiniteDuration(10, TimeUnit.MINUTES)
@@ -61,17 +61,17 @@ class HumidityChecker(getValueFunction: () => Future[Float], wemoConnector: Wemo
       futureValue.foreach { value =>
         if (value > highThreshold) {
           Logger.debug(s"Humidity: $value % > high threshold $highThreshold, switching on.")
-          wemoConnector.switchOn()
+          wemoConnector.switchOn("desu")
         }
         if (value < lowThreshold) {
           Logger.debug(s"Humidity: $value % < low threshold $lowThreshold, switching off.")
-          wemoConnector.switchOff()
+          wemoConnector.switchOff("desu")
         }
       }
     }
     else {
       Logger.debug(s"Quiet hours, switching off")
-      wemoConnector.switchOff()
+      wemoConnector.switchOff("desu")
     }
   }
 

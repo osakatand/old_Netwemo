@@ -1,7 +1,7 @@
 package controllers
 
 import connectors.{WemoConnector, NetatmoConnector}
-import core.HumidityChecker
+import io.tardieu.netwemo.core.{TemperatureChecker, HumidityChecker}
 import play.api._
 import play.api.mvc._
 import scala.concurrent.Await
@@ -13,6 +13,7 @@ object Application extends Controller {
   val wemoConnector = new WemoConnector
   val netatmoConnector = new NetatmoConnector
   val humidityChecker = new HumidityChecker(netatmoConnector.getHumidity _, wemoConnector) // The _ is to transform the method into a function
+  val temperatureChecker = new TemperatureChecker(netatmoConnector.getTemperature _, wemoConnector)
 
   def index = Action {
     Ok(io.tardieu.netwemo.views.html.index("Your new application is ready."))
