@@ -25,7 +25,7 @@ class WemoConnector {
         .post(Map[String, Seq[String]]())
     // TODO: Check the response to catch errors
     futureResponse.map { r =>
-      Logger.debug(s"Switch order received with status ${r.status} ${r.statusText}: ${r.body}")
+      Logger.debug(s"Switch $state order for $device received with status ${r.status} ${r.statusText}")
     }.recover {
       case e: Throwable => Logger.error("Problem talking to ouimeaux: ", e)
     }

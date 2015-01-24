@@ -45,11 +45,11 @@ class TemperatureChecker(getValueFunction: () => Future[Float], wemoConnector: W
       val futureValue = getValue()
       futureValue.foreach { value =>
         if (value > highThreshold) {
-          Logger.debug(s"Temperature: $value % > high threshold $highThreshold, switching off.")
+          Logger.debug(s"Temperature: $value > high threshold $highThreshold, switching off.")
           wemoConnector.switchOn("chauffage")
         }
         if (value < lowThreshold) {
-          Logger.debug(s"Temperature: $value % < low threshold $lowThreshold, switching on.")
+          Logger.debug(s"Temperature: $value < low threshold $lowThreshold, switching on.")
           wemoConnector.switchOff("chauffage")
         }
     }
