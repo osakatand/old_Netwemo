@@ -3,6 +3,7 @@ package io.tardieu.netwemo.core
 import java.util.concurrent.TimeUnit
 
 import akka.actor.Cancellable
+import com.typesafe.config.ConfigFactory
 import connectors.WemoConnector
 import org.joda.time.LocalTime
 import com.github.nscala_time.time.Imports._
@@ -21,11 +22,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 class HumidityChecker(getValueFunction: () => Future[Float], wemoConnector: WemoConnector) {
 
+  val conf = ConfigFactory.load.getConfig("humidity")
+
   // Those values should be read from the database
-  private var startTime: LocalTime = new LocalTime(9, 0)
-  private var stopTime: LocalTime = new LocalTime(21, 0)
-  private var lowThreshold = 50
-  private var highThreshold = 55
+  private var startTime: LocalTime = new LocalTime(conf.getInt("startHour"), conf.getInt("stopMinute"))
+  private var stopTime: LocalTime = new LocalTime(conf.getInt("stopHour"), conf.getInt("stopMinute"))
+  private var lowThreshold = conf.getInt("lowThreshold")
+  private var highThreshold = conf.getInt("highThreshold")
   private var checkInterval = FiniteDuration(10, TimeUnit.MINUTES)
 
   private var schedule: Cancellable = _
@@ -70,7 +73,7 @@ class HumidityChecker(getValueFunction: () => Future[Float], wemoConnector: Wemo
       }
     }
     else {
-      Logger.debug(s"Quiet hours, switching off")
+      Logger.debug(s"Quiet hours, switching off humidity")
       wemoConnector.switchOff("desu")
     }
   }

@@ -3,6 +3,7 @@ package io.tardieu.netwemo.core
 import java.util.concurrent.TimeUnit
 
 import akka.actor.Cancellable
+import com.typesafe.config.ConfigFactory
 import connectors.WemoConnector
 import play.api.Logger
 import play.api.libs.concurrent.Akka._
@@ -18,9 +19,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 class TemperatureChecker(getValueFunction: () => Future[Float], wemoConnector: WemoConnector) {
 
+  val conf = ConfigFactory.load.getConfig("temperature")
+
   // Those values should be read from the database
-  private var lowThreshold = 16
-  private var highThreshold = 17
+  private var lowThreshold = conf.getDouble("lowThreshold")
+  private var highThreshold = conf.getDouble("highThreshold")
   private var checkInterval = FiniteDuration(10, TimeUnit.MINUTES)
 
   private var schedule: Cancellable = _
