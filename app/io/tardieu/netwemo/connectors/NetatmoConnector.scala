@@ -41,7 +41,7 @@ class NetatmoConnector {
 
   def refreshToken: String = {
     val futureResponse: Future[WSResponse] =
-      WS.url("http://api.netatmo.net/oauth2/token")
+      WS.url("https://api.netatmo.net/oauth2/token")
         .withHeaders("Content-type" -> "application/x-www-form-urlencoded")
         .post(postRefreshParameters)
 
