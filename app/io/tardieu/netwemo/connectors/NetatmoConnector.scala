@@ -46,7 +46,7 @@ class NetatmoConnector {
         .post(postRefreshParameters)
 
     val futureToken = futureResponse.map(r => (r.json \ "access_token").as[String])
-    access_token = Await.result(futureToken, 5 seconds) // We wait for the token to be sure we have the good one
+    access_token = Await.result(futureToken, 15 seconds) // We wait for the token to be sure we have the good one
     access_token
   }
 
